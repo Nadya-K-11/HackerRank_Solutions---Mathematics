@@ -1,0 +1,87 @@
+using System.CodeDom.Compiler;
+using System.Collections.Generic;
+using System.Collections;
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.Serialization;
+using System.Text.RegularExpressions;
+using System.Text;
+using System;
+
+class Result
+{
+    const int MOD = 1000000007;
+    const int MAX = 2000000;
+
+    static long[] fact = new long[MAX + 1];
+    static long[] invFact = new long[MAX + 1];
+
+    static Result()
+    {
+        fact[0] = 1;
+        for (int i = 1; i <= MAX; i++)
+            fact[i] = (fact[i - 1] * i) % MOD;
+
+        invFact[MAX] = ModPow(fact[MAX], MOD - 2, MOD);
+        for (int i = MAX - 1; i >= 0; i--)
+            invFact[i] = (invFact[i + 1] * (i + 1)) % MOD;
+    }
+
+    static long ModPow(long a, long b, int mod)
+    {
+        long res = 1;
+        a %= mod;
+        while (b > 0)
+        {
+            if ((b & 1) == 1) res = (res * a) % mod;
+            a = (a * a) % mod;
+            b >>= 1;
+        }
+        return res;
+    }
+
+    static long nCr(int n, int r)
+    {
+        if (r < 0 || r > n) return 0;
+        long ans = fact[n];
+        ans = (ans * invFact[r]) % MOD;
+        ans = (ans * invFact[n - r]) % MOD;
+        return ans;
+    }
+
+    public static int solve(int n, int m)
+    {
+        long ans = nCr(m + n - 2, m - 1);
+        return (int)ans;
+    }
+}
+
+class Solution
+{
+    public static void Main(string[] args)
+    {
+        TextWriter textWriter = new StreamWriter(@System.Environment.GetEnvironmentVariable("OUTPUT_PATH"), true);
+
+        int t = Convert.ToInt32(Console.ReadLine().Trim());
+
+        for (int tItr = 0; tItr < t; tItr++)
+        {
+            string[] firstMultipleInput = Console.ReadLine().TrimEnd().Split(' ');
+
+            int n = Convert.ToInt32(firstMultipleInput[0]);
+
+            int m = Convert.ToInt32(firstMultipleInput[1]);
+
+            int result = Result.solve(n, m);
+
+            textWriter.WriteLine(result);
+        }
+
+        textWriter.Flush();
+        textWriter.Close();
+    }
+}
